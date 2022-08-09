@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://dyxttu7ldsuwe"]
+
+[ext_resource type="Script" path="res://Scenario.gd" id="1_j74lc"]
+[ext_resource type="PackedScene" uid="uid://5cwjomyngi1l" path="res://Simulator.tscn" id="2_3jseu"]
+[ext_resource type="PackedScene" uid="uid://bvsm3eiguh6d" path="res://ThreadList.tscn" id="2_mbkph"]
+[ext_resource type="Script" path="res://ThreadAssert.gd" id="4_koe8q"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stbby"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8etrs"]
+
+[node name="Control" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_right = 1024.0
+offset_bottom = 800.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+vertical_scroll_mode = 0
+
+[node name="Scenario" type="VBoxContainer" parent="ScrollContainer"]
+offset_right = 1024.0
+offset_bottom = 800.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_j74lc")
+
+[node name="ThreadList" parent="ScrollContainer/Scenario" instance=ExtResource("2_mbkph")]
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 1024.0
+offset_bottom = 361.0
+theme_override_styles/selected = SubResource("StyleBoxFlat_stbby")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_8etrs")
+scroll_horizontal_enabled = false
+
+[node name="Label" type="Label" parent="ScrollContainer/Scenario"]
+custom_minimum_size = Vector2(0, 120)
+offset_top = 365.0
+offset_right = 1024.0
+offset_bottom = 485.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Button grid below this line is not part of UI, but can be used to fire all the events that normally arrive from the debugger."
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Simulator" parent="ScrollContainer/Scenario" instance=ExtResource("2_3jseu")]
+offset_top = 489.0
+offset_right = 1024.0
+offset_bottom = 800.0
+
+[node name="ThreadAssert" type="Node" parent="."]
+script = ExtResource("4_koe8q")

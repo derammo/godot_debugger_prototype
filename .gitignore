@@ -1,0 +1,19 @@
+# Import cache
+.import/
+.godot/shader_cache
+.godot/*cache*
+.godot/editor
+.godot/imported
+
+# Binaries
+bin/
+build/
+lib/
+.mono/
+
+# plugins we don't distribute
+addons/godot-git-plugin/
+/git_api*
+/plugin.cfg
+testImage1024.png*
+*.code-workspace

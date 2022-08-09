@@ -1,0 +1,105 @@
+[gd_scene load_steps=2 format=3 uid="uid://dr5a1o1gccj14"]
+
+[ext_resource type="Script" path="res://SimulatedThread.gd" id="1_ob37d"]
+
+[node name="SimulatedThread" type="HBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_ob37d")
+
+[node name="Label" type="Label" parent="."]
+offset_top = 7.0
+offset_right = 68.0
+offset_bottom = 33.0
+text = "Thread 1
+"
+
+[node name="Breaked" type="Button" parent="."]
+offset_left = 72.0
+offset_right = 144.0
+offset_bottom = 40.0
+text = "breaked"
+
+[node name="Breaked2" type="Button" parent="."]
+offset_left = 148.0
+offset_right = 166.0
+offset_bottom = 40.0
+text = "2"
+
+[node name="Breaked3" type="Button" parent="."]
+offset_left = 170.0
+offset_right = 188.0
+offset_bottom = 40.0
+text = "3"
+
+[node name="Breaked4" type="Button" parent="."]
+offset_left = 192.0
+offset_right = 210.0
+offset_bottom = 40.0
+text = "4"
+
+[node name="Breaked5" type="Button" parent="."]
+offset_left = 214.0
+offset_right = 232.0
+offset_bottom = 40.0
+text = "5"
+
+[node name="Paused" type="Button" parent="."]
+offset_left = 236.0
+offset_right = 301.0
+offset_bottom = 40.0
+text = "paused"
+
+[node name="Alert" type="Button" parent="."]
+offset_left = 305.0
+offset_right = 350.0
+offset_bottom = 40.0
+text = "alert"
+
+[node name="Continued" type="Button" parent="."]
+offset_left = 354.0
+offset_right = 441.0
+offset_bottom = 40.0
+text = "continued"
+
+[node name="Exited" type="Button" parent="."]
+offset_left = 445.0
+offset_right = 501.0
+offset_bottom = 40.0
+text = "exited"
+
+[node name="StackDump" type="Button" parent="."]
+offset_left = 505.0
+offset_right = 606.0
+offset_bottom = 40.0
+text = "stack_dump"
+
+[node name="StackFrameVars" type="Button" parent="."]
+offset_left = 610.0
+offset_right = 752.0
+offset_bottom = 40.0
+text = "stack_frame_vars"
+
+[node name="StackFrameVar" type="Button" parent="."]
+offset_left = 756.0
+offset_right = 890.0
+offset_bottom = 40.0
+text = "stack_frame_var"
+
+[node name="Info" type="Button" parent="."]
+offset_left = 894.0
+offset_right = 933.0
+offset_bottom = 40.0
+text = "info"
+
+[connection signal="pressed" from="Breaked" to="." method="_on_breaked_pressed" binds= [1]]
+[connection signal="pressed" from="Breaked2" to="." method="_on_breaked_pressed" binds= [2]]
+[connection signal="pressed" from="Breaked3" to="." method="_on_breaked_pressed" binds= [3]]
+[connection signal="pressed" from="Breaked4" to="." method="_on_breaked_pressed" binds= [4]]
+[connection signal="pressed" from="Breaked5" to="." method="_on_breaked_pressed" binds= [5]]
+[connection signal="pressed" from="Paused" to="." method="_on_paused_pressed"]
+[connection signal="pressed" from="Alert" to="." method="_on_alert_pressed"]
+[connection signal="pressed" from="Continued" to="." method="_on_continued_pressed"]
+[connection signal="pressed" from="Exited" to="." method="_on_exited_pressed"]
+[connection signal="pressed" from="StackDump" to="." method="_on_stack_dump_pressed"]
+[connection signal="pressed" from="Info" to="." method="_on_info_pressed"]

@@ -1,0 +1,132 @@
+[gd_scene load_steps=3 format=3 uid="uid://5cwjomyngi1l"]
+
+[ext_resource type="Script" path="res://Simulator.gd" id="1_8wxd6"]
+[ext_resource type="PackedScene" uid="uid://dr5a1o1gccj14" path="res://SimulatedThread.tscn" id="2_x3gn5"]
+
+[node name="Simulator" type="VBoxContainer"]
+offset_right = 933.0
+offset_bottom = 101.0
+script = ExtResource("1_8wxd6")
+
+[node name="SimulatedThread" parent="." instance=ExtResource("2_x3gn5")]
+offset_right = 933.0
+offset_bottom = 31.0
+
+[node name="SimulatedThread2" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 35.0
+offset_right = 933.0
+offset_bottom = 66.0
+
+[node name="SimulatedThread3" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 70.0
+offset_right = 933.0
+offset_bottom = 101.0
+
+[node name="SimulatedThread4" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 105.0
+offset_right = 933.0
+offset_bottom = 136.0
+
+[node name="SimulatedThread5" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 140.0
+offset_right = 933.0
+offset_bottom = 171.0
+
+[node name="SimulatedThread6" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 175.0
+offset_right = 933.0
+offset_bottom = 206.0
+
+[node name="SimulatedThread7" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 210.0
+offset_right = 933.0
+offset_bottom = 241.0
+
+[node name="SimulatedThread8" parent="." instance=ExtResource("2_x3gn5")]
+offset_top = 245.0
+offset_right = 933.0
+offset_bottom = 276.0
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+offset_top = 280.0
+offset_right = 933.0
+offset_bottom = 311.0
+
+[node name="ClearExecution" type="Button" parent="Buttons"]
+offset_right = 129.0
+offset_bottom = 31.0
+text = "clear_execution"
+
+[connection signal="thread_alert" from="SimulatedThread" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread2" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread3" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread4" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread5" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread6" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread7" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="thread_alert" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_alert"]
+[connection signal="thread_breaked" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_breaked"]
+[connection signal="thread_continued" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_continued"]
+[connection signal="thread_exited" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_exited"]
+[connection signal="thread_info" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_info"]
+[connection signal="thread_paused" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_paused"]
+[connection signal="thread_stack_dump" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_stack_dump"]
+[connection signal="thread_stack_frame_var" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_stack_frame_var"]
+[connection signal="thread_stack_frame_vars" from="SimulatedThread8" to="." method="_on_simulated_thread_thread_stack_frame_vars"]
+[connection signal="pressed" from="Buttons/ClearExecution" to="." method="_on_clear_execution_pressed"]
