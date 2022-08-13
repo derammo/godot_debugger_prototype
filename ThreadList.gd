@@ -136,7 +136,8 @@ func _ready():
 	_ignored = connect('item_selected', _on_thread_list_item_selected)
 	_ignored = connect('column_title_pressed', _on_thread_list_column_title_pressed)
 	_ignored = connect('item_activated', _on_thread_list_item_activated)
-	_ignored = connect('column_title_clicked', _on_thread_list_column_title_clicked)
+	if has_signal('column_title_clicked'):
+		_ignored = connect('column_title_clicked', _on_thread_list_column_title_clicked)
 	_ignored = column_title_context_menu.connect('id_pressed', _on_column_title_context_pressed)	
 	
 func rebuild():
@@ -583,8 +584,7 @@ func _on_thread_list_item_selected():
 
 
 func _on_thread_list_column_title_pressed(column):
-	# XXX HACK remove
-	if column == 0:
+	if column == 0 and not has_signal('column_title_clicked'):
 		_on_thread_list_column_title_clicked(column, MOUSE_BUTTON_RIGHT)
 		return
 		
