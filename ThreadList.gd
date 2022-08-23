@@ -11,10 +11,12 @@ signal thread_nodebug_frame_selected(tid: PackedByteArray, frame: int)
 @onready var crashed_icon = ResourceLoader.load('res://status_error.png')
 
 const ICON_SIZE: int = 24
+const H_SEPARATION: int = 6
+const H_CHILD_MARGIN: int = 18
 
 enum Field {
-	PIN = 0,
-	STATUS,
+	# WARNING: pin and status must be combined in first column to make it wide enoug for child connectors
+	STATUS = 0,
 	ID,
 	NAME,
 	STACK,
@@ -31,20 +33,20 @@ enum Meta {
 }
 
 const titles: Array = [
-	'', '', 'ID', 'Name', 'Where', 'Lang.', 'Category', 'Debug ID' 
+	'Pin State', 'ID', 'Name', 'Where', 'Lang.', 'Category', 'Debug ID' 
 ]
 
 const long_titles: Array = [
-	'Pin', 'Status', 'ID', 'Name', 'Where', 'Language', 'Category', 'Debug ID' 
+	'Status', 'ID', 'Name', 'Where', 'Language', 'Category', 'Debug ID' 
 ]
 
 var field_visible: Array = [
-	true, true, true, true, true, false, false, false
+	true, true, true, true, false, false, false
 ]
 
 # Current tree column assignments.
 var column_index: Array = [
-	-1, -1, -1, -1, -1, -1, -1, -1
+	-1, -1, -1, -1, -1, -1, -1
 ]
 
 # Index from tree column to field.
@@ -105,6 +107,7 @@ class ThreadInfo:
 	var status: Status
 	var severity_code: int
 	var can_debug: bool
+	var has_stack_dump: bool
 	var language: String = ""
 	var thread_tag: PackedByteArray
 	var thread_name: String = ""
@@ -134,7 +137,8 @@ func _ready():
 
 	var _ignored = connect('item_edited', _on_thread_list_item_edited)
 	_ignored = connect('item_selected', _on_thread_list_item_selected)
-	_ignored = connect('column_title_pressed', _on_thread_list_column_title_pressed)
+	if has_signal('column_title_pressed'):
+		_ignored = connect('column_title_pressed', _on_thread_list_column_title_pressed)
 	_ignored = connect('item_activated', _on_thread_list_item_activated)
 	if has_signal('column_title_clicked'):
 		_ignored = connect('column_title_clicked', _on_thread_list_column_title_clicked)
@@ -163,10 +167,14 @@ func rebuild():
 			column_index[field] = -1
 			continue
 		match field:
-			Field.PIN, Field.STATUS:
+			Field.STATUS:
+				# last separation is due to an error in child size calculation in Tree
+				set_column_custom_minimum_width(column, (ICON_SIZE + H_SEPARATION) * 2 + H_CHILD_MARGIN + H_SEPARATION)
 				set_column_expand(column, false)
-				set_column_custom_minimum_width (column, ICON_SIZE)
-			Field.ID, Field.DEBUG_ID, Field.NAME, Field.LANGUAGE, Field.CATEGORY:
+			Field.ID:
+				set_column_custom_minimum_width(column, 48) 	
+				set_column_expand(column, false)
+			Field.DEBUG_ID, Field.NAME, Field.LANGUAGE, Field.CATEGORY:
 				set_column_expand(column, false)
 		set_column_title(column, titles[field])
 		column_index[field] = column
@@ -178,14 +186,22 @@ func rebuild():
 		_tree_item = add_row(thread)
 	update_status_for_threads()
 	
+	
 func _exit_tree():
 	# undo circularity
 	for thread in threads.values():
 		thread.tree_item = null
 	threads.clear()	
-	disconnect('column_title_pressed', _on_thread_list_column_title_pressed)
+
+	column_title_context_menu.disconnect('id_pressed', _on_column_title_context_pressed)	
+	if has_signal('column_title_clicked'):
+		disconnect('column_title_clicked', _on_thread_list_column_title_clicked)
+	disconnect('item_activated', _on_thread_list_item_activated)
+	if has_signal('column_title_pressed'):
+		disconnect('column_title_pressed', _on_thread_list_column_title_pressed)
 	disconnect('item_selected', _on_thread_list_item_selected)
 	disconnect('item_edited', _on_thread_list_item_edited)
+
 
 func set_debugger(debugger: Object) -> int:
 	var err: int
@@ -246,17 +262,13 @@ func add_row(info: ThreadInfo):
 	info.tree_item = item
 
 	var column: int
-	column = column_index[Field.PIN]
+	column = column_index[Field.STATUS]
 	if column > -1:
 		item.set_cell_mode(column, TreeItem.CELL_MODE_CHECK)
 		item.set_editable(column, true)
 		item.set_icon_max_width(column, ICON_SIZE)
 		item.set_selectable(column, false)		
-	column = column_index[Field.STATUS]
-	if column > -1:
 		item.set_icon(column, null)
-		item.set_icon_max_width(column, ICON_SIZE)
-		item.set_selectable(column, false)
 	column = column_index[Field.ID]
 	if column > -1:
 		item.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
@@ -269,14 +281,19 @@ func add_row(info: ThreadInfo):
 	if column > -1:
 		item.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 		item.set_text(column, 'Main' if info.is_main_thread else 'Worker')
-	update_info(info)
+	column = column_index[Field.NAME]
+	if column > -1:
+		item.set_text(column, '')
+	column = column_index[Field.LANGUAGE]
+	if column > -1:
+		item.set_text(column, '')
 	column = column_index[Field.STACK]
 	if column > -1:
 		if len(info.stack_dump_info) > 0:
 			build_stack_dump(info)
 		else:
 			item.set_text(column, '')
-			item.set_tooltip(column, '%s\n%s' % [info.reason, '(no stack info received)' if info.can_debug else '(stack info unavailable)'])
+			item.set_tooltip(column, '%s\n%s' % [info.reason, '(no stack info received)' if info.has_stack_dump else '(stack info unavailable)'])
 	item.collapsed = true
 	return item
 
@@ -316,7 +333,7 @@ func update_status_for_threads():
 
 
 func less_than(left: ThreadInfo, right: ThreadInfo, p_sort_field: Field) -> bool:
-	var pin_column: int = column_index[Field.PIN]
+	var pin_column: int = column_index[Field.STATUS]
 	if pin_column > -1:
 		var left_flag: bool = left.tree_item and left.tree_item.is_checked(pin_column)
 		var right_flag: bool = right.tree_item and right.tree_item.is_checked(pin_column)
@@ -405,12 +422,9 @@ func clear_threads():
 	
 	
 func disable_selection_on_status_columns(row: TreeItem):
-	var column: int = column_index[Field.PIN]
+	var column: int = column_index[Field.STATUS]
 	if column > -1:
-		row.set_selectable(column, false)		
-	column = column_index[Field.STATUS]
-	if column > -1:
-		row.set_selectable(column, false)		
+		row.set_selectable(column, false)
 
 
 func build_stack_dump(thread: ThreadInfo):
@@ -428,13 +442,31 @@ func build_stack_dump(thread: ThreadInfo):
 		frame_line.set_metadata(Meta.STACK, stack_dump_info[frame])
 		frame_line.set_metadata(Meta.THREAD, thread)
 		frame_line.set_metadata(Meta.FRAME, frame)
-		disable_selection_on_status_columns(frame_line)
-		for column in columns:
-			frame_line.set_selectable(column, false)	
-		if stack_column > -1:
+		for scan in columns:
+			frame_line.set_selectable(scan, false)	
+		var column: int
+		column = column_index[Field.STATUS]
+		if column > -1:
+			frame_line.set_icon(column, null)
+			frame_line.set_icon_max_width(column, ICON_SIZE)
+		column = column_index[Field.ID]
+		if column > -1:
+			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
+			frame_line.set_text(column, '')
+		column = column_index[Field.DEBUG_ID]
+		if column > -1:
+			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
+			frame_line.set_text(column, '')
+		column = column_index[Field.CATEGORY]
+		if column > -1:
+			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
+			frame_line.set_text(column, '')
+		column = column_index[Field.STACK]
+		if column > -1:
 			frame_line.set_selectable(stack_column, true)		
 			frame_line.set_text(stack_column, format_frame_text(stack_dump_info[frame]))
-		
+		frame_line.collapsed = true
+				
 	
 func create_thread_info(debug_thread_id: PackedByteArray, is_main_thread: bool) -> ThreadInfo:
 	var thread_number: int
@@ -454,7 +486,7 @@ func notify_frame_selected(thread: ThreadInfo, frame: int, frame_info: Dictionar
 		frame_info)	
 	
 
-func _on_debugger_clear_execution(_script: Object):
+func _on_debugger_clear_execution(_script: Script):
 	clear_threads();
 	
 
@@ -493,6 +525,7 @@ func _on_debugger_thread_breaked(debug_thread_id, is_main_thread, reason, severi
 		threads[debug_thread_id] = thread
 		add_row(thread)
 	thread.can_debug = true
+	thread.has_stack_dump = true
 	thread.severity_code = severity_code
 	thread.status = Status.BREAKPOINT if can_debug else Status.CRASHED
 	# This will also update status:
@@ -512,12 +545,13 @@ func _on_debugger_thread_paused(debug_thread_id, is_main_thread):
 		threads[debug_thread_id] = thread
 		add_row(thread)
 	thread.can_debug = true
+	thread.has_stack_dump = true
 	thread.severity_code = 0
 	thread.status = Status.PAUSED
 	update_status(thread)
 	
 
-func _on_debugger_thread_alert(debug_thread_id, is_main_thread, reason, severity_code, can_debug, _has_stack_dump):
+func _on_debugger_thread_alert(debug_thread_id, is_main_thread, reason, severity_code, can_debug, has_stack_dump):
 	update_placeholder_main(is_main_thread)
 	var thread: ThreadInfo
 	if threads.has(debug_thread_id):
@@ -529,6 +563,7 @@ func _on_debugger_thread_alert(debug_thread_id, is_main_thread, reason, severity
 		threads[debug_thread_id] = thread
 		add_row(thread)
 	thread.can_debug = can_debug
+	thread.has_stack_dump = has_stack_dump
 	thread.severity_code = severity_code
 	thread.status = Status.ALERT if can_debug else Status.CRASHED
 	update_status_for_threads()
@@ -583,9 +618,9 @@ func _on_thread_list_item_selected():
 	notify_frame_selected(thread, row.get_metadata(Meta.FRAME), row.get_metadata(Meta.STACK))
 
 
-func _on_thread_list_column_title_pressed(column):
-	if column == 0 and not has_signal('column_title_clicked'):
-		_on_thread_list_column_title_clicked(column, MOUSE_BUTTON_RIGHT)
+func _on_thread_list_column_title_clicked(column, mouse_button_index):
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		column_title_context_menu.visible = true
 		return
 		
 	if column > len(field_index) - 1:
@@ -599,6 +634,16 @@ func _on_thread_list_column_title_pressed(column):
 			sort_table()
 		_:
 			return
+
+
+func _on_thread_list_column_title_pressed(column):
+	if column == 0 and not has_signal('column_title_clicked'):
+		# legacy Tree class: simulate right click when first column is left clicked
+		_on_thread_list_column_title_clicked(column, MOUSE_BUTTON_RIGHT)
+		return
+		
+	# translate
+	_on_thread_list_column_title_clicked(column, MOUSE_BUTTON_LEFT)
 			
 
 func _on_thread_list_item_edited():
@@ -616,12 +661,6 @@ func _on_debugger_thread_exited(debug_thread_id):
 	var thread: ThreadInfo = threads[debug_thread_id]
 	thread.tree_item.free()
 	threads.erase(debug_thread_id)
-
-
-func _on_thread_list_column_title_clicked(_column, mouse_button_index):
-	if mouse_button_index != MOUSE_BUTTON_RIGHT:
-		return
-	column_title_context_menu.visible = true
 
 
 func _on_column_title_context_pressed(id: int):

@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Debugger"
-run/main_scene="res://Main_WithThreadAssertions.tscn"
+run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.0", "Vulkan Clustered")
 config/icon="res://icon.png"
 

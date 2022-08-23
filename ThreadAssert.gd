@@ -5,8 +5,16 @@ var typed: int
 func _ready():
 	var thread = Thread.new()
 	thread.start(_thread_function)
-	breakpoint
+	raise_error_demo()
 	thread.wait_to_finish()
+	thread.free()
+
+
+func raise_error_demo():
+	var bad = Thread.new()
+	bad.free()
+	bad.get_id()
+	
 	
 func bar():
 	var worker_thread_only_var: int = 1
