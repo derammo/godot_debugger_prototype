@@ -4,6 +4,7 @@
 .godot/*cache*
 .godot/editor
 .godot/imported
+.godot/mono
 
 # Binaries
 bin/

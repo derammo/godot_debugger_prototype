@@ -14,6 +14,28 @@ const ICON_SIZE: int = 24
 const H_SEPARATION: int = 6
 const H_CHILD_MARGIN: int = 18
 
+class FieldInfo:
+	var title: String
+	var long_title: String
+	var column_visible: bool = false
+	var column_index: int 	
+	
+	func _init(_title: String, _long_title: String, _column_visible: bool, _column_index: int):
+		title = _title
+		long_title = _long_title
+		column_visible = _column_visible
+		column_index = _column_index
+
+var field_info: Array = [
+	FieldInfo.new('Pin State', 'Pin and State', true, -1),	
+	FieldInfo.new('ID', 'ID', true, -1),	
+	FieldInfo.new('Name', 'Name', true, -1),	
+	FieldInfo.new('Where', 'Where', true, -1),	
+	FieldInfo.new('Lang.', 'Language', false, -1),	
+	FieldInfo.new('Category', 'Category', false, -1),	
+	FieldInfo.new('Debug ID', 'Debug ID', false, -1)	
+]
+
 enum Field {
 	# WARNING: pin and status must be combined in first column to make it wide enoug for child connectors
 	STATUS = 0,
@@ -32,23 +54,6 @@ enum Meta {
 	FRAME
 }
 
-const titles: Array = [
-	'Pin State', 'ID', 'Name', 'Where', 'Lang.', 'Category', 'Debug ID' 
-]
-
-const long_titles: Array = [
-	'Status', 'ID', 'Name', 'Where', 'Language', 'Category', 'Debug ID' 
-]
-
-var field_visible: Array = [
-	true, true, true, true, false, false, false
-]
-
-# Current tree column assignments.
-var column_index: Array = [
-	-1, -1, -1, -1, -1, -1, -1
-]
-
 # Index from tree column to field.
 var field_index: Array = []
 
@@ -57,6 +62,7 @@ var column_title_context_menu: PopupMenu
 
 var threads: Dictionary = {}
 var current: ThreadInfo = null
+
 var next_main_thread_number: int = 1
 var next_thread_number: int = 100
 var sort_field: Field = Field.DEBUG_ID
@@ -129,10 +135,10 @@ func _ready():
 	column_title_context_menu.allow_search = true
 	column_title_context_menu.hide_on_checkable_item_selection = false
 	for field in [ Field.NAME, Field.CATEGORY, Field.LANGUAGE, Field.DEBUG_ID ]:
-		column_title_context_menu.add_check_item(long_titles[field], field)
+		column_title_context_menu.add_check_item(field_info[field].long_title, field)
 		var index: int = column_title_context_menu.get_item_index(field)
 		column_title_context_menu.set_item_as_checkable(index, true)	
-		column_title_context_menu.set_item_checked(index, field_visible[field])
+		column_title_context_menu.set_item_checked(index, field_info[field].column_visible)
 	add_child(column_title_context_menu)
 
 	var _ignored = connect('item_edited', _on_thread_list_item_edited)
@@ -154,7 +160,7 @@ func rebuild():
 	# pass 1: measure columns
 	var column: int = 0
 	for field in Field.NUM_FIELDS:
-		if field_visible[field]:
+		if field_info[field].column_visible:
 			column += 1
 	columns = column
 		
@@ -163,8 +169,8 @@ func rebuild():
 	assert(root != null)
 	column = 0
 	for field in Field.NUM_FIELDS:
-		if !field_visible[field]:
-			column_index[field] = -1
+		if !field_info[field].column_visible:
+			field_info[field].column_index = -1
 			continue
 		match field:
 			Field.STATUS:
@@ -176,8 +182,8 @@ func rebuild():
 				set_column_expand(column, false)
 			Field.DEBUG_ID, Field.NAME, Field.LANGUAGE, Field.CATEGORY:
 				set_column_expand(column, false)
-		set_column_title(column, titles[field])
-		column_index[field] = column
+		set_column_title(column, field_info[field].title)
+		field_info[field].column_index = column
 		field_index.append(field)
 		column += 1
 	var _tree_item: TreeItem
@@ -233,10 +239,10 @@ func set_debugger(debugger: Object) -> int:
 
 
 func update_info(info: ThreadInfo):
-	var column: int = column_index[Field.NAME]
+	var column: int = field_info[Field.NAME].column_index
 	if column > -1:
 		info.tree_item.set_text(column, info.thread_name)
-	column = column_index[Field.LANGUAGE]
+	column = field_info[Field.LANGUAGE].column_index
 	if column > -1:
 		info.tree_item.set_text(column, info.language)
 
@@ -262,32 +268,32 @@ func add_row(info: ThreadInfo):
 	info.tree_item = item
 
 	var column: int
-	column = column_index[Field.STATUS]
+	column = field_info[Field.STATUS].column_index
 	if column > -1:
 		item.set_cell_mode(column, TreeItem.CELL_MODE_CHECK)
 		item.set_editable(column, true)
 		item.set_icon_max_width(column, ICON_SIZE)
 		item.set_selectable(column, false)		
 		item.set_icon(column, null)
-	column = column_index[Field.ID]
+	column = field_info[Field.ID].column_index
 	if column > -1:
 		item.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 		item.set_text(column, '%d' % info.thread_number)
-	column = column_index[Field.DEBUG_ID]
+	column = field_info[Field.DEBUG_ID].column_index
 	if column > -1:
 		item.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 		item.set_text(column, info.debug_thread_id.hex_encode())
-	column = column_index[Field.CATEGORY]
+	column = field_info[Field.CATEGORY].column_index
 	if column > -1:
 		item.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 		item.set_text(column, 'Main' if info.is_main_thread else 'Worker')
-	column = column_index[Field.NAME]
+	column = field_info[Field.NAME].column_index
 	if column > -1:
 		item.set_text(column, '')
-	column = column_index[Field.LANGUAGE]
+	column = field_info[Field.LANGUAGE].column_index
 	if column > -1:
 		item.set_text(column, '')
-	column = column_index[Field.STACK]
+	column = field_info[Field.STACK].column_index
 	if column > -1:
 		if len(info.stack_dump_info) > 0:
 			build_stack_dump(info)
@@ -307,7 +313,7 @@ func set_current(thread: ThreadInfo):
 	
 
 func update_status(thread: ThreadInfo):
-	var column: int = column_index[Field.STATUS]
+	var column: int = field_info[Field.STATUS].column_index
 	if column < 0:
 		return
 	if thread == current:
@@ -333,7 +339,7 @@ func update_status_for_threads():
 
 
 func less_than(left: ThreadInfo, right: ThreadInfo, p_sort_field: Field) -> bool:
-	var pin_column: int = column_index[Field.STATUS]
+	var pin_column: int = field_info[Field.STATUS].column_index
 	if pin_column > -1:
 		var left_flag: bool = left.tree_item and left.tree_item.is_checked(pin_column)
 		var right_flag: bool = right.tree_item and right.tree_item.is_checked(pin_column)
@@ -422,7 +428,7 @@ func clear_threads():
 	
 	
 func disable_selection_on_status_columns(row: TreeItem):
-	var column: int = column_index[Field.STATUS]
+	var column: int = field_info[Field.STATUS].column_index
 	if column > -1:
 		row.set_selectable(column, false)
 
@@ -433,7 +439,7 @@ func build_stack_dump(thread: ThreadInfo):
 		thread.tree_item.set_metadata(Meta.STACK, {})
 		
 	thread.tree_item.set_metadata(Meta.STACK, stack_dump_info[0])
-	var stack_column = column_index[Field.STACK]
+	var stack_column = field_info[Field.STACK].column_index
 	if stack_column > -1:
 		thread.tree_item.set_text(stack_column, format_frame_text(stack_dump_info[0]))
 		thread.tree_item.set_tooltip(stack_column, '%s\n%s' % [thread.reason, format_stack_text(stack_dump_info)])
@@ -445,23 +451,23 @@ func build_stack_dump(thread: ThreadInfo):
 		for scan in columns:
 			frame_line.set_selectable(scan, false)	
 		var column: int
-		column = column_index[Field.STATUS]
+		column = field_info[Field.STATUS].column_index
 		if column > -1:
 			frame_line.set_icon(column, null)
 			frame_line.set_icon_max_width(column, ICON_SIZE)
-		column = column_index[Field.ID]
+		column = field_info[Field.ID].column_index
 		if column > -1:
 			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 			frame_line.set_text(column, '')
-		column = column_index[Field.DEBUG_ID]
+		column = field_info[Field.DEBUG_ID].column_index
 		if column > -1:
 			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 			frame_line.set_text(column, '')
-		column = column_index[Field.CATEGORY]
+		column = field_info[Field.CATEGORY].column_index
 		if column > -1:
 			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 			frame_line.set_text(column, '')
-		column = column_index[Field.STACK]
+		column = field_info[Field.STACK].column_index
 		if column > -1:
 			frame_line.set_selectable(stack_column, true)		
 			frame_line.set_text(stack_column, format_frame_text(stack_dump_info[frame]))
@@ -666,5 +672,5 @@ func _on_debugger_thread_exited(debug_thread_id):
 func _on_column_title_context_pressed(id: int):
 	var index: int = column_title_context_menu.get_item_index(id)
 	column_title_context_menu.toggle_item_checked(index)
-	field_visible[id] = column_title_context_menu.is_item_checked(index)
+	field_info[id].column_visible = column_title_context_menu.is_item_checked(index)
 	rebuild()

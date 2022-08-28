@@ -28,3 +28,7 @@ config/icon="res://icon.png"
 [display]
 
 window/size/viewport_height=800
+
+[dotnet]
+
+project/assembly_name="Debugger"
