@@ -437,6 +437,7 @@ func build_stack_dump(thread: ThreadInfo):
 	var stack_dump_info: Array = thread.stack_dump_info
 	if len(stack_dump_info) < 1:
 		thread.tree_item.set_metadata(Meta.STACK, {})
+		return
 		
 	thread.tree_item.set_metadata(Meta.STACK, stack_dump_info[0])
 	var stack_column = field_info[Field.STACK].column_index
@@ -444,7 +445,7 @@ func build_stack_dump(thread: ThreadInfo):
 		thread.tree_item.set_text(stack_column, format_frame_text(stack_dump_info[0]))
 		thread.tree_item.set_tooltip(stack_column, '%s\n%s' % [thread.reason, format_stack_text(stack_dump_info)])
 	for frame in range(1, len(stack_dump_info)):
-		var frame_line = create_item(thread.tree_item)
+		var frame_line : TreeItem = create_item(thread.tree_item)
 		frame_line.set_metadata(Meta.STACK, stack_dump_info[frame])
 		frame_line.set_metadata(Meta.THREAD, thread)
 		frame_line.set_metadata(Meta.FRAME, frame)
@@ -467,8 +468,7 @@ func build_stack_dump(thread: ThreadInfo):
 		if column > -1:
 			frame_line.set_text_alignment(column, HORIZONTAL_ALIGNMENT_CENTER)
 			frame_line.set_text(column, '')
-		column = field_info[Field.STACK].column_index
-		if column > -1:
+		if stack_column > -1:
 			frame_line.set_selectable(stack_column, true)		
 			frame_line.set_text(stack_column, format_frame_text(stack_dump_info[frame]))
 		frame_line.collapsed = true
@@ -616,6 +616,14 @@ func _on_debugger_thread_stack_dump(debug_thread_id, stack_dump_info: Array):
 	build_stack_dump(thread)
 			
 				
+func _on_debugger_thread_exited(debug_thread_id):
+	if !threads.has(debug_thread_id):
+		return
+	var thread: ThreadInfo = threads[debug_thread_id]
+	thread.tree_item.free()
+	threads.erase(debug_thread_id)
+
+
 func _on_thread_list_item_selected():
 	var row: TreeItem = get_selected()
 	var thread: ThreadInfo = row.get_metadata(Meta.THREAD)
@@ -660,15 +668,7 @@ func _on_thread_list_item_activated():
 	# XXX show code
 	pass
 	
-
-func _on_debugger_thread_exited(debug_thread_id):
-	if !threads.has(debug_thread_id):
-		return
-	var thread: ThreadInfo = threads[debug_thread_id]
-	thread.tree_item.free()
-	threads.erase(debug_thread_id)
-
-
+	
 func _on_column_title_context_pressed(id: int):
 	var index: int = column_title_context_menu.get_item_index(id)
 	column_title_context_menu.toggle_item_checked(index)

@@ -35,7 +35,9 @@ func bar():
 func foo():
 	var worker_thread_foo_var: int = 1
 	bar()
-	var _ignored = worker_thread_foo_var	
+	var _ignored = worker_thread_foo_var
+	# bad call	
+	_ignored.free()
 		
 func _thread_function():
 	var worker_thread_fun_var: int = 1

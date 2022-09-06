@@ -10,36 +10,46 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8etrs"]
 
 [node name="Control2" type="VBoxContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
-offset_right = 1024.0
+layout_mode = 2
+offset_right = 1152.0
 offset_bottom = 800.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 vertical_scroll_mode = 0
 
 [node name="Scenario" type="VBoxContainer" parent="ScrollContainer"]
-offset_right = 1024.0
+layout_mode = 2
+offset_right = 1152.0
 offset_bottom = 800.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_j74lc")
 
 [node name="ThreadList" parent="ScrollContainer/Scenario" instance=ExtResource("2_mbkph")]
+layout_mode = 2
+anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_right = 1024.0
+offset_right = 1152.0
 offset_bottom = 361.0
+grow_horizontal = 1
+grow_vertical = 1
 theme_override_styles/selected = SubResource("StyleBoxFlat_stbby")
 theme_override_styles/selected_focus = SubResource("StyleBoxFlat_8etrs")
 scroll_horizontal_enabled = false
 
 [node name="Label" type="Label" parent="ScrollContainer/Scenario"]
 custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
 offset_top = 365.0
-offset_right = 1024.0
+offset_right = 1152.0
 offset_bottom = 485.0
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -48,8 +58,9 @@ vertical_alignment = 1
 autowrap_mode = 2
 
 [node name="Simulator" parent="ScrollContainer/Scenario" instance=ExtResource("2_3jseu")]
+layout_mode = 2
 offset_top = 489.0
-offset_right = 1024.0
+offset_right = 1152.0
 offset_bottom = 800.0
 
 [node name="ThreadAssert" type="Node" parent="."]

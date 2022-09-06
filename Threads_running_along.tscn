@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://chgdslut7nnn6"]
+
+[ext_resource type="Script" path="res://ProcessingNoBreaks.gd" id="1_3ewox"]
+[ext_resource type="Script" path="res://ThreadedNoBreaks.gd" id="2_aqnkt"]
+
+[node name="Control" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ProcessingNoBreaks" type="Node" parent="."]
+script = ExtResource("1_3ewox")
+
+[node name="ThreadedNoBreaks" type="Node" parent="."]
+script = ExtResource("2_aqnkt")
